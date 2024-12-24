@@ -1,25 +1,21 @@
 import logo from './logo.svg';
 import './App.css';
+import Router from './routers'
+import Notification from './components/Notification'
+// import customTheme from './theme/customTheme'
+import { ThemeProvider } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { getThemeSelector } from './redux/selector';
+import { createTheme } from '@mui/material';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const theme = useSelector(getThemeSelector)
+  return <div className={`bg-[${theme.palette.containerColor.main}]`}>
+    <ThemeProvider theme={createTheme(theme)}>
+      <Router>
+      </Router>
+    </ThemeProvider>
+  </div>
 }
 
 export default App;

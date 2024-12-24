@@ -3,11 +3,24 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import Notification from './components/Notification';
+import { useSelector } from 'react-redux';
+import { getThemeSelector } from './redux/selector';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+        <Notification></Notification>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
 
