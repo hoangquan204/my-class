@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getExerciseSelector, getThemeSelector } from "../../redux/selector";
-import { Avatar, Box, Button, CircularProgress, Divider, FormControl, FormControlLabel, FormLabel, IconButton, Modal, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, IconButton, Modal, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
 import moment from "moment/moment";
 import CountdownTimer from "../CountdownTimer";
 import FlagIcon from '@mui/icons-material/Flag';
-import RotateLeftIcon from '@mui/icons-material/RotateLeft';
-import CircularProgressCustom from "../CircularProgressCustom";
-import { theme } from "@cloudinary/url-gen/actions/effect";
+import { createExerciseResult } from "../ExerciseResult/exerciseResultSlice";
+import notificationSlice from "../Notification/notificationSlice";
+import BreadcrumbsCustom from "../BreadcrumbsCustom/BreadcrumbsCustom";
 const style = {
     position: 'absolute',
     top: '50%',
@@ -21,12 +21,10 @@ const style = {
     p: 4,
 };
 
-
 function ExcerciseDetail() {
     const { id } = useParams();
 
     const [open, setOpen] = useState(false)
-
 
     const [selectedExercise, setSelectedExercise] = useState({})
     const [formattedDateTime, setFormattedDateTime] = useState('')
@@ -34,14 +32,25 @@ function ExcerciseDetail() {
 
     const [countCorrect, setCountCorrect] = useState(0)
 
+    const dispatch = useDispatch()
+
     const exercise = useSelector(getExerciseSelector)
     const theme = useSelector(getThemeSelector)
+
+    const navigate = useNavigate()
+
+    const handleReport = () => {
+        const check = window.confirm("Kết quả làm bài sẽ không được lưu nếu bạn di chuyển sang trang khác!")
+        if (check)
+            navigate("/contact")
+    }
 
     const handleSubmitExercise = () => {
         const check = window.confirm('Nộp bài và kết thúc!')
         if (check) {
             handleEvalueExercise()
             toggleOpenEvalueExerciseModal()
+            navigate(-1)
         }
     }
 
@@ -68,7 +77,17 @@ function ExcerciseDetail() {
                 countCorrectAnswer++;
         })
         setCountCorrect(countCorrectAnswer);
-        console.log(countCorrectAnswer, "-", countCorrectAnswer / selectedExercise.questions.length * 100, "%");
+
+        const data = {
+            exerciseId: selectedExercise.id,
+            countCorrect: countCorrectAnswer,
+            score: countCorrectAnswer / selectedExercise?.questions?.length * 100
+        }
+        dispatch(createExerciseResult(data))
+        dispatch(notificationSlice.actions.showNotification({
+            type: 'success',
+            message: 'Nộp bài thành công!'
+        }))
     }
 
     const evalueExerciseModal = (
@@ -104,8 +123,20 @@ function ExcerciseDetail() {
             </Box>
         </Modal>
     )
+    const breadcumbs = [
+        {
+            title: 'Trang chủ',
+            path: '/'
+        },
+        {
+            title: 'Bài tập',
+            path: '/class'
+        }
+    ]
+    
     return <Box className='px-10'>
         {evalueExerciseModal}
+        <BreadcrumbsCustom secondary={breadcumbs} primary={selectedExercise?.title} />
         <div className='flex items-center justify-between p-2'>
             <div className='flex flex-col'>
                 <Typography variant="h5">{selectedExercise?.title}</Typography>
@@ -127,19 +158,21 @@ function ExcerciseDetail() {
                         <FormLabel id="demo-radio-buttons-group-label">{`Câu ${index + 1}: ${question.content}`}</FormLabel>
                         <RadioGroup
                             aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue="female"
+                            // Liên kết trạng thái
                             name="radio-buttons-group"
                         >
                             {question.answers.map((answer) => {
-                                return <FormControlLabel sx={{ color: theme.palette.textColor.main }} value={answer.content} control={<Radio onClick={(e) => {
-                                    const newAnswers = { ...answers }
-                                    newAnswers[question.id] = {
-                                        questionIndex: index + 1,
-                                        answerId: answer.id,
-                                        content: answer.content,
-                                    }
-                                    setAnswers(newAnswers)
-                                }} />} label={answer.content} />
+                                return <FormControlLabel
+                                    sx={{ color: theme.palette.textColor.main }}
+                                    value={answer.content} control={<Radio onClick={(e) => {
+                                        const newAnswers = { ...answers }
+                                        newAnswers[question.id] = {
+                                            questionIndex: index + 1,
+                                            answerId: answer.id,
+                                            content: answer.content,
+                                        }
+                                        setAnswers(newAnswers)
+                                    }} />} label={answer.content} />
                             })}
                         </RadioGroup>
                     </FormControl>
@@ -158,18 +191,11 @@ function ExcerciseDetail() {
         </div>
         <Divider></Divider>
         <div className='flex items-center justify-between py-2'>
-            <div className='flex items-center gap-x-2'>
-                <Tooltip title='Làm lại'>
-                    <Button variant="outlined">
-                        <RotateLeftIcon></RotateLeftIcon>
-                    </Button>
-                </Tooltip>
-                <Tooltip title='Báo lỗi'>
-                    <Button variant="outlined">
-                        <FlagIcon></FlagIcon>
-                    </Button>
-                </Tooltip>
-            </div>
+            <Tooltip title='Báo lỗi'>
+                <Button variant="outlined" onClick={handleReport}>
+                    <FlagIcon></FlagIcon>
+                </Button>
+            </Tooltip>
             <Button variant="contained" onClick={handleSubmitExercise}>Nộp bài</Button>
         </div>
     </Box>

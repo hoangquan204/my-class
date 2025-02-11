@@ -46,7 +46,7 @@ export default createSlice({
                 state.list = action.payload
                 state.error = false
                 state.success = true
-                state.message = 'Get list message successfully!'
+                state.message = 'Lấy danh sách tin nhắn thành công!'
                 state.loading = false
 
                 return state
@@ -73,7 +73,7 @@ export default createSlice({
                 state.list = [...state.list, action.payload]
                 state.error = false
                 state.success = true
-                state.message = 'Create message successfully!'
+                state.message = 'Gửi tin nhắn thành công!'
                 state.loading = false
 
                 return state

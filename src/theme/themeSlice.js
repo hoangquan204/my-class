@@ -38,7 +38,6 @@ export const lightMode = {
     }
 }
 
-
 export default createSlice({
     name: 'theme',
     initialState: {

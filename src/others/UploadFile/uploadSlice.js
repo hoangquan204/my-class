@@ -41,7 +41,7 @@ export default createSlice({
                 console.log(state.url)
                 state.error = false
                 state.success = true
-                state.message = 'Upload file to cloud successfully!'
+                state.message = 'Tải file lên Cloudinary thành công!'
                 state.loading = false
 
                 return state

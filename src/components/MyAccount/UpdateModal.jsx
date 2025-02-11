@@ -18,6 +18,7 @@ const style = {
     width: 400,
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: '8px',
     pt: 2,
     px: 4,
     pb: 3,
@@ -58,7 +59,7 @@ export default function NestedModal({ label, id, value }) {
     switch (id) {
         case 'gender':
             input = <>
-                <InputLabel id="gender">Gender</InputLabel>
+                <InputLabel id="gender">Giới tính</InputLabel>
                 <RadioGroup
                     aria-labelledby="demo-radio-buttons-group-label"
                     defaultValue="female"
@@ -68,15 +69,15 @@ export default function NestedModal({ label, id, value }) {
                         setNewValue(e.target.value)
                     }}
                 >
-                    <FormControlLabel value="female" control={<Radio value='female' />} label="Female" />
-                    <FormControlLabel value="male" control={<Radio value='male' />} label="Male" />
-                    <FormControlLabel value="other" control={<Radio value='other' />} label="Other" />
+                    <FormControlLabel value="female" control={<Radio value='female' />} label="Nữ" />
+                    <FormControlLabel value="male" control={<Radio value='male' />} label="Nam" />
+                    <FormControlLabel value="other" control={<Radio value='other' />} label="Khác" />
                 </RadioGroup>
             </>
             break
         case 'address':
             input = <>
-                <InputLabel id="address">Address</InputLabel>
+                <InputLabel id="address">Địa chỉ</InputLabel>
                 <Select
                     className='w-full'
                     labelId="demo-simple-select-label"
@@ -104,7 +105,7 @@ export default function NestedModal({ label, id, value }) {
     return (
         <div >
             <Button onClick={handleOpen}>
-                <Tooltip title='Update now'>
+                <Tooltip title='Cập nhật ngay'>
                     <IconButton>
                         <CreateIcon></CreateIcon>
                     </IconButton>
@@ -118,12 +119,12 @@ export default function NestedModal({ label, id, value }) {
                 className={`text-[${theme.palette.textColor.main}]`}
             >
                 <Box className='flex flex-col items-center gap-y-2' sx={{ ...style, width: 400 }}>
-                    <Typography sx={{ color: theme.palette.textColor.main }} variant='h5'>Update your profile</Typography>
+                    <Typography sx={{ color: theme.palette.textColor.main }} variant='h5'>Cập nhật thông tin</Typography>
                     {input}
                     <Button variant='contained' onClick={() => {
-                        if (window.confirm('Your information will be updated!'))
+                        if (window.confirm('Thông tin của bạn sẽ được cập nhật!'))
                             handleUpdateUser()
-                    }}>Update now</Button>
+                    }}>Cập nhật</Button>
                 </Box>
             </Modal>
         </div>

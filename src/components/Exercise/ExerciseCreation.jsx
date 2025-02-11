@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getExerciseSelector, getThemeSelector } from "../../redux/selector";
 import { createExercise } from "./exerciseSlice";
 import notificationSlice from "../Notification/notificationSlice";
+import BreadcrumbsCustom from "../BreadcrumbsCustom/BreadcrumbsCustom";
 
 function ExerciseCreation() {
     const exercise = useSelector(getExerciseSelector)
@@ -24,7 +25,6 @@ function ExerciseCreation() {
     const [answerD, setAnswerD] = useState('')
 
     const dispatch = useDispatch()
-
 
     const toggleOpenQuestionCreateModal = () => {
         setOpen(!open)
@@ -103,10 +103,6 @@ function ExerciseCreation() {
                 type: 'error',
                 message: 'Bạn cần điền đầy đủ thông tin!'
             }))
-
-
-        console.log(data);
-
     }
 
     const questionCreateModal = (
@@ -140,10 +136,22 @@ function ExerciseCreation() {
         </Modal>
     )
 
+    const breadcumbs = [
+        {
+            title: 'Trang chủ',
+            path: '/'
+        },
+        {
+            title: 'Bài tập',
+            path: '/class'
+        }
+    ]
+
     return <Box>
         {questionCreateModal}
+        <BreadcrumbsCustom secondary={breadcumbs} primary={'Tạo bài tập'} />
         <Typography className='text-primary border-l-4 border-l-primary' >
-            <span className='text-xl font-semibold px-1'>Tạo lớp học</span>
+            <span className='text-xl font-semibold px-1'>Tạo bài tập trắc nghiệm</span>
         </Typography>
         <div className='flex flex-col gap-y-2 w-[60%] my-4'>
             <TextField id="outlined-basic" label="Tiêu đề" value={title} onChange={(e) => {

@@ -8,13 +8,14 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Button, Divider, Modal, Tab } from "@mui/material";
+import { Box, Button, Modal } from "@mui/material";
 import UpdateModal from './UpdateModal'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { setAvatar } from "../User/authSlice";
 import notificationSlice from "../Notification/notificationSlice";
-import Tabs from './Tabs'
+import MyAccountTabs from '../Tabs/MyAccountTabs'
 import BreadcrumbsCustom from "../BreadcrumbsCustom/BreadcrumbsCustom";
+import UpdatePasswordModal from "./UpdatePasswordModal";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -52,7 +53,6 @@ function MyAccount() {
     const auth = useSelector(getAuthSelector)
     const order = useSelector(getOrderSelector)
 
-    const [value, setValue] = React.useState(0)
     const [open, setOpen] = React.useState(false)
     const [avatarUrl, setAvatarUrl] = React.useState('')
     const [selectedFile, setSelectedFile] = React.useState(null)
@@ -105,14 +105,14 @@ function MyAccount() {
                         tabIndex={-1}
                         startIcon={<CloudUploadIcon />}
                     >
-                        Upload files
+                        Tải ảnh lên
                         <VisuallyHiddenInput
                             type="file"
                             onChange={handleImageChange}
                             multiple
                         />
                     </Button>
-                    <Button variant="contained" onClick={handleSetAvatar}>Submit</Button>
+                    <Button variant="contained" onClick={handleSetAvatar}>Xác nhận</Button>
                 </div>
             </Box>
         </Modal>
@@ -121,33 +121,33 @@ function MyAccount() {
         {setAvatarModal}
         <Box className='container mx-auto py-10 flex flex-col'>
             <BreadcrumbsCustom secondary={[{
-                title: 'Home',
+                title: 'Trang chủ',
                 path: '/'
-            }]} primary={'My-Account'}></BreadcrumbsCustom>
+            }]} primary={'Trang cá nhân'}></BreadcrumbsCustom>
             <Box className='flex items-center gap-x-5 w-full mx-auto py-2'>
                 <Box className='flex flex-col items-center gap-y-2'>
                     <img alt='No avatar' className='w-[200px] h-[200px] object-cover rounded-md' src={auth.userDetail.avatar}></img>
-                    <Button variant='outlined' onClick={toggleOpenAvatarModal}>Set avatar</Button>
+                    <Button variant='outlined' onClick={toggleOpenAvatarModal}>Đổi ảnh đại diện</Button>
                 </Box>
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
                         <TableBody>
                             <TableRow>
-                                <StyledTableCell ><p className=' font-semibold'>Name: </p></StyledTableCell>
+                                <StyledTableCell ><p className=' font-semibold'>Họ và tên: </p></StyledTableCell>
                                 <StyledTableCell >{auth.userDetail.name}</StyledTableCell>
                                 <StyledTableCell >
                                     <UpdateModal label='Name' id='name' value={auth.userDetail.name}></UpdateModal>
                                 </StyledTableCell>
                             </TableRow>
                             <TableRow>
-                                <StyledTableCell ><p className=' font-semibold'>Phone number: </p></StyledTableCell>
+                                <StyledTableCell ><p className=' font-semibold'>Số điện thoại: </p></StyledTableCell>
                                 <StyledTableCell >{auth.userDetail.phoneNumber}</StyledTableCell>
                                 <StyledTableCell >
                                     <UpdateModal label='Phone number' id='phoneNumber' value={auth.userDetail.phoneNumber}></UpdateModal>
                                 </StyledTableCell>
                             </TableRow>
                             <TableRow>
-                                <StyledTableCell ><p className=' font-semibold'>Gender: </p></StyledTableCell>
+                                <StyledTableCell ><p className=' font-semibold'>Giới tính: </p></StyledTableCell>
                                 <StyledTableCell >{auth.userDetail.gender}</StyledTableCell>
                                 <StyledTableCell >
                                     <UpdateModal label='Gender' id='gender' value={auth.userDetail.gender}></UpdateModal>
@@ -161,17 +161,22 @@ function MyAccount() {
                                 </StyledTableCell>
                             </TableRow>
                             <TableRow>
-                                <StyledTableCell ><p className=' font-semibold'>Address: </p></StyledTableCell>
+                                <StyledTableCell ><p className=' font-semibold'>Địa chỉ: </p></StyledTableCell>
                                 <StyledTableCell >{auth.userDetail.address}</StyledTableCell>
                                 <StyledTableCell >
                                     <UpdateModal label='Address' id='address' value={auth.userDetail.address}></UpdateModal>
+                                </StyledTableCell>
+                            </TableRow>
+                            <TableRow>
+                                <StyledTableCell align="right" colSpan={3}>
+                                    <UpdatePasswordModal></UpdatePasswordModal>
                                 </StyledTableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
                 </TableContainer >
             </Box>
-            <Tabs tab1={order.listOrder}></Tabs>
+            <MyAccountTabs tab1={order?.listOrder}></MyAccountTabs>
         </Box >
     </>
 }

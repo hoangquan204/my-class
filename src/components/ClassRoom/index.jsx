@@ -1,22 +1,21 @@
-import { Box, Button, CircularProgress, FormControl, Grid, InputLabel, Modal, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Modal, Select, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { getAuthSelector, getClassRoomSelector, getUploadFileSelector } from "../../redux/selector";
+import { getAuthSelector, getClassRoomSelector, getThemeSelector, getUploadFileSelector } from "../../redux/selector";
 import { useEffect, useState } from "react";
-import { createClassRoom, getListClassRoom } from "./classRoomSlice"
+import { createClassRoom, getListAllClassRoom, getListClassRoom } from "./classRoomSlice"
 import ClassRoomCard from "./ClassRoomCard";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import SearchIcon from '@mui/icons-material/Search';
-import { BorderRight } from "@mui/icons-material";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CardActionArea from '@mui/material/CardActionArea';
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useLineSeries } from "@mui/x-charts/hooks/useSeries";
 import { uploadFile } from "../../others/UploadFile/uploadSlice";
 import notificationSlice from "../Notification/notificationSlice";
 import { useNavigate } from "react-router-dom";
+import BreadcrumbsCustom from "../BreadcrumbsCustom/BreadcrumbsCustom";
 
 const style = {
     position: 'absolute',
@@ -33,10 +32,7 @@ const style = {
 function Class() {
     const classRoom = useSelector(getClassRoomSelector)
     const upload = useSelector(getUploadFileSelector)
-
-    console.log(classRoom)
-    const auth = useSelector(getAuthSelector)
-    console.log(auth)
+    const theme = useSelector(getThemeSelector)
 
     const dispatch = useDispatch()
 
@@ -44,15 +40,18 @@ function Class() {
 
     useEffect(() => {
         dispatch(getListClassRoom())
+        dispatch(getListAllClassRoom())
     }, [dispatch])
 
     const [open, setOpen] = useState(false)
 
     const [name, setName] = useState('')
+    const [password, setPassword] = useState('')
     const [description, setDescription] = useState('')
     const [thumbnail, setThumbnail] = useState('')
     const [avatar, setAvatar] = useState('')
     const [type, setType] = useState('thumbnail')
+    const [field, setField] = useState('')
 
     const toggleOpenCreateClassRoomModal = () => {
         setOpen(!open)
@@ -97,9 +96,11 @@ function Class() {
     const handleCreateClassRoom = () => {
         const data = {
             name,
-            thumbnail,
+            thumbnail: thumbnail ? thumbnail : 'https://cdn.pixabay.com/photo/2023/08/01/17/59/french-bulldog-8163486_640.jpg',
             avatar,
-            description
+            description,
+            password,
+            field: field ? field : 'Khác'
         }
         console.log(data)
         dispatch(createClassRoom(data))
@@ -111,6 +112,7 @@ function Class() {
         setAvatar('')
         setThumbnail('')
         setDescription('')
+        setField('')
         toggleOpenCreateClassRoomModal()
     }
 
@@ -122,47 +124,54 @@ function Class() {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                <Typography className='p-2 text-center text-primary' sx={{ fontSize: '1.1rem' }}>Create class room</Typography>
+                <Typography className='p-2 text-center text-primary' sx={{ fontSize: '1.1rem' }}>Tạo lớp học</Typography>
                 <div className='flex items-end gap-x-2 my-2'>
                     <Box className='w-[60%] flex flex-col gap-y-2'>
-                        <TextField id="outlined-basic" value={name} label="Name" variant="outlined" onChange={(e) => {
+                        <TextField id="outlined-basic" value={name} label="Tên lớp học" variant="outlined" onChange={(e) => {
                             setName(e.target.value)
                         }} />
-                        <Button
-                            component="label"
-                            role={undefined}
-                            variant="outlined"
-                            tabIndex={-1}
-                            startIcon={<CloudUploadIcon />}
-                        >
-                            Set thumbnail
-                            <VisuallyHiddenInput
-                                type="file"
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">Lĩnh vực</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={field}
+                                label="Lĩnh vực"
                                 onChange={(e) => {
-                                    handleImageChange(e, 'thumbnail')
+                                    setField(e.target.value)
                                 }}
-                                multiple
-                            />
-                        </Button>
-                        <Button
-                            component="label"
-                            role={undefined}
-                            variant="outlined"
-                            tabIndex={-1}
-                            startIcon={<CloudUploadIcon />}
-                        >
-                            Set avatar
-                            <VisuallyHiddenInput
-                                type="file"
-                                onChange={(e) => {
-                                    handleImageChange(e, 'avatar')
-                                }}
-                                multiple
-                            />
-                        </Button>
-                        <TextField id="outlined-basic" value={description} multiline rows={5} label="Description" variant="outlined" onChange={(e) => {
+                            >
+                                <MenuItem value={'Giáo dục'}>Giáo dục</MenuItem>
+                                <MenuItem value={'Khoa học'}>Khoa học</MenuItem>
+                                <MenuItem value={'Công nghệ'}>Công nghệ</MenuItem>
+                                <MenuItem value={'Khác'}>Khác</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <div className="flex items-center gap-2">
+                            <TextField id="outlined-basic" value={password} label="Mật khẩu" variant="outlined" onChange={(e) => {
+                                setPassword(e.target.value)
+                            }} />
+                            <Button
+                                component="label"
+                                role={undefined}
+                                variant="outlined"
+                                tabIndex={-1}
+                                startIcon={<CloudUploadIcon />}
+                            >
+                                Ảnh bìa
+                                <VisuallyHiddenInput
+                                    type="file"
+                                    onChange={(e) => {
+                                        handleImageChange(e, 'thumbnail')
+                                    }}
+                                    multiple
+                                />
+                            </Button>
+                        </div>
+                        <TextField id="outlined-basic" value={description} multiline rows={5} label="Mô tả" variant="outlined" onChange={(e) => {
                             setDescription(e.target.value)
                         }} />
+
                     </Box>
                     <Card sx={{ maxWidth: 345 }}>
                         <CardActionArea>
@@ -180,13 +189,6 @@ function Class() {
                                         alt="green iguana"
                                     />
                                 }
-                                {type === 'avatar' && upload.loading ?
-                                    <div className='absolute flex rounded-sm h-[70px] w-[70px] -bottom-4 left-2'>
-                                        <CircularProgress className='m-auto' ></CircularProgress>
-                                    </div>
-                                    :
-                                    <img className='absolute h-[70px] w-[70px] rounded-full -bottom-4 left-2' src={avatar || 'https://cdn.pixabay.com/photo/2023/10/30/01/31/duck-8351436_640.jpg'}></img>
-                                }
                             </div>
                             <CardContent>
                                 <Typography gutterBottom variant="h5" component="div">
@@ -198,13 +200,22 @@ function Class() {
                             </CardContent>
                         </CardActionArea>
                     </Card>
+
                 </div>
-                <Button className='w-full' variant="contained" onClick={handleCreateClassRoom}>Create</Button>
+                <Button className='w-full' variant="contained" onClick={handleCreateClassRoom}>TẠO</Button>
             </Box>
         </Modal>
     )
 
+    const breadcumbs = [
+        {
+            title: 'Trang chủ',
+            path: '/'
+        }
+    ]
+
     return <Box className='p-4'>
+        <BreadcrumbsCustom secondary={breadcumbs} primary={'Lớp học'} />
         {createClassRoomModal}
         <div className='flex items-center justify-between'>
             <Typography className='text-primary border-l-4 border-l-primary' >
@@ -213,7 +224,7 @@ function Class() {
             <div className='flex items-center gap-x-2'>
                 <Tooltip title='Tìm lớp học'>
                     <Button variant='outlined' onClick={(() => {
-                        navigate("/class")
+                        navigate("/list-class")
                     })}>
                         <SearchIcon></SearchIcon>
                     </Button>
@@ -226,9 +237,30 @@ function Class() {
             </div>
         </div>
         <div className='flex items-center justify-around gap-x-2 gap-y-2 flex-wrap'>
-            {Array.isArray(classRoom?.list) && classRoom?.list?.map((item) => {
-                return <ClassRoomCard classRoom={item}></ClassRoomCard>
-            })}
+            {Array.isArray(classRoom?.list) && classRoom.list.length > 0 ? classRoom?.list?.map((item) => {
+                return <ClassRoomCard isMember={true} classRoom={item}></ClassRoomCard>
+            }) : (
+                <Box
+                    className="flex flex-col items-center justify-center"
+                    sx={{ textAlign: "center", color: theme.palette.textColor.main, py: 4 }}
+                >
+                    <Typography variant="h6" gutterBottom>
+                        Bạn chưa tham gia lớp học nào!
+                    </Typography>
+                    <Typography variant="body2" sx={{ marginBottom: 2 }}>
+                        Hãy tìm kiếm lớp học yêu thích ngay.
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        onClick={() => {
+                            navigate("/list-class");
+                        }}
+                    >
+                        Tìm kiếm lớp học
+                    </Button>
+                </Box>
+            )
+            }
         </div>
     </Box>
 }

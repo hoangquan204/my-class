@@ -51,7 +51,7 @@ export default createSlice({
                 state.list = action.payload
                 state.error = false
                 state.success = true
-                state.message = 'Get list excercise successfully!'
+                state.message = 'Lấy danh sách bài tập thành công!'
                 state.loading = false
 
                 return state
@@ -78,7 +78,7 @@ export default createSlice({
                 state.list = [...state.list, action.payload]
                 state.error = false
                 state.success = true
-                state.message = 'Create exercise successfully!'
+                state.message = 'Tạo bài tập thành công!'
                 state.loading = false
 
                 return state

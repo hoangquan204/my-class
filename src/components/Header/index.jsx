@@ -6,60 +6,31 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
-import logo from '../../images/logoMyClass3.png';
-import MenuLeft from '../MenuLeft';
+import { logo, logoDarkMode } from '../../others/DefaultImage';
 import AuthModal from '../User/AuthModal'
-import { Avatar, Chip, Divider, List, ListItem } from '@mui/material';
+import { Avatar, IconButton, InputAdornment, Modal, TextField, Tooltip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAuthSelector, getThemeSelector } from '../../redux/selector';
-import Settings from '@mui/icons-material/Settings';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Logout from '@mui/icons-material/Logout';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import authSlice from '../User/authSlice';
 import { useNavigate } from 'react-router-dom';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Menu from '../Menu';
+import classRoomSlice from '../ClassRoom/classRoomSlice';
+import { Mic } from '@mui/icons-material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SearchModal from '../ListClassRoom/SearchModal';
 
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
+const style = {
     position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    width: '100%',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
-        },
-    },
-}));
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 500,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    outline: 'none',
+    p: 4,
+    borderRadius: 5,
+};
 
 export default function Header() {
     const auth = useSelector(getAuthSelector)
@@ -69,29 +40,87 @@ export default function Header() {
 
     const navigate = useNavigate()
 
-    const [open, setOpen] = React.useState(false)
-
-    const toggleOpen = () => {
-        setOpen(!open)
-    };
-
-    const handleClose = () => {
-        setOpen(false)
-    }
-
     const handleLogout = () => {
         dispatch(authSlice.actions.logOut())
+        dispatch(classRoomSlice.actions.refreshData())
+
         navigate("/")
     }
 
     console.log(theme.palette.containerColor.main)
 
+    const [voiceSearch, setVoiceSearch] = React.useState(false);
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [searchValue, setSearchValue] = React.useState('');
+    const recognitionRef = React.useRef(null);
+
+    const startVoiceRecognition = () => {
+        setVoiceSearch(true);
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'vi-VN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognitionRef.current = recognition;
+
+        recognition.start();
+
+        recognition.onresult = (event) => {
+            const speechResult = event.results[0][0].transcript;
+            setSearchValue(speechResult);
+            setIsOpen(true)
+        };
+
+        recognition.onspeechend = () => {
+            recognition.stop();
+            setVoiceSearch(false);
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            setVoiceSearch(false);
+        };
+    };
+
+    const handleCloseVoiceSearch = () => {
+        setVoiceSearch(false);
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
+        }
+    };
+
+    const voiceModal = (
+        <Modal
+            open={voiceSearch}
+            onClose={handleCloseVoiceSearch}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={style}>
+                <div>
+                    <Mic sx={{ fontSize: '5rem', color: `${theme.palette.primary.main}` }} />
+                    <span className='voice'>
+                        Đang nghe ...
+                    </span>
+                </div>
+            </Box>
+        </Modal>
+    )
+
+    const handleChange = (e) => {
+        setSearchValue(e.target.value);
+    };
+
+    const handleFocus = () => {
+        setIsOpen(true);
+    };
+
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
-                <Toolbar className='flex items-center justify-between'>
+        <Box sx={{ flexGrow: 1 }} id='header'>
+            {voiceModal}
+            <AppBar position="static" sx={{ height: 80, display: 'flex' }} >
+                <Toolbar sx={{ my: 'auto' }} className='flex items-center justify-between'>
                     <div className='flex items-center'>
-                        <MenuLeft></MenuLeft>
+                        <Menu></Menu>
                         <Typography
                             variant="h6"
                             noWrap
@@ -101,62 +130,27 @@ export default function Header() {
                                 navigate("/")
                             }}
                         >
-                            <img className='w-[50px] h-[50px]' src={logo}></img>
+                            <img className='w-[200px] rounded-md' src={theme.palette.mode === 'light' ? logo : logoDarkMode} ></img>
                         </Typography>
                     </div>
-                    {/* <div className='flex items-center'>
-                        <div className=' flex flex-wrap items-center gap-x-2'>
-                            {laptopTypes.map((item) => {
-                                return <div className='hover:bg-black hover:text-primary transition-all cursor-pointer text-black px-2 py-1  border border-black  rounded-md'>{item.name}</div>
-                            })}
-                        </div>
-                    </div> */}
-                    <div className='flex items-center'>
+                    <div className='flex items-center gap-x-2'>
+                        <SearchModal></SearchModal>
                         {auth.username ?
-                            <div className='relative'>
-                                <Avatar sx={{ width: 32, height: 32 }} onClick={toggleOpen} src={auth?.userDetail?.avatar}></Avatar>
-                                {open &&
-                                    <div className={`bg-gray-300 text-black transition-all min-w-[170px] absolute top-10 z-30 rounded-md`} >
-                                        <div className='flex cursor-pointer transition-all items-center gap-x-2 hover:bg-gray-400 p-2 rounded-md' onClick={() => {
-                                            handleClose()
-                                            navigate("/my-account")
-                                        }}>
-                                            <AccountBoxIcon></AccountBoxIcon>
-                                            My account
-                                        </div>
-                                        <div className='flex cursor-pointer transition-all items-center gap-x-2 hover:bg-gray-400 p-2 rounded-md' onClick={() => {
-                                            navigate("/my-cart")
-                                            handleClose()
-                                        }}>
-                                            <ShoppingCartIcon></ShoppingCartIcon>
-                                            My cart
-                                        </div>
-                                        <Divider />
-                                        <div className='flex cursor-pointer transition-all items-center gap-x-2 hover:bg-gray-400 p-2 rounded-md' onClick={handleClose}>
-                                            <PersonAdd fontSize="small" />
-                                            Add another account
-                                        </div>
-                                        <div className='flex cursor-pointer transition-all items-center gap-x-2 hover:bg-gray-400 p-2 rounded-md' onClick={handleClose}>
-                                            <Settings fontSize="small" />
-                                            Settings
-                                        </div>
-                                        <div className='flex cursor-pointer transition-all items-center gap-x-2 hover:bg-gray-400 p-2 rounded-md' onClick={handleLogout}>
-                                            <Logout fontSize="small" />
-                                            Logout
-                                        </div>
-                                    </div>
-                                }
-                            </div>
+                            <>
+                                <IconButton onClick={() => {
+                                    navigate("/my-account")
+                                }}>
+                                    <Tooltip title='Trang cá nhân' >
+                                        <Avatar sx={{ width: 32, height: 32 }} src={auth?.userDetail?.avatar}></Avatar>
+                                    </Tooltip>
+                                </IconButton>
+                                <IconButton sx={{ color: 'white' }} onClick={handleLogout}>
+                                    <Tooltip title='Đăng xuất'>
+                                        <LogoutIcon ></LogoutIcon>
+                                    </Tooltip>
+                                </IconButton>
+                            </>
                             : <AuthModal></AuthModal>}
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search…"
-                                inputProps={{ 'aria-label': 'search' }}
-                            />
-                        </Search>
                     </div>
                 </Toolbar>
             </AppBar>

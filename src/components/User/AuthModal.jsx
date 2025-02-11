@@ -2,17 +2,15 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Alert, Typography, Grid, Stack, TextField, LinearProgress, Snackbar, FormLabel, RadioGroup, FormControlLabel, Radio, Accordion, AccordionSummary, AccordionDetails, Avatar, requirePropFactory, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Select, MenuItem } from '@mui/material'
-import { useState, useRef, useEffect } from 'react';
+import { Typography, Grid, Stack, TextField, LinearProgress, FormLabel, RadioGroup, FormControlLabel, Radio, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Select, MenuItem } from '@mui/material'
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { signIn, signUp } from './authSlice';
+import authSlice, { sendOTP, signIn, signUp } from './authSlice';
 import { getAuthSelector, getThemeSelector } from '../../redux/selector';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import notificationSlice from '../Notification/notificationSlice';
 import { provinces } from '../../others/Provinces';
-import { getListMessage } from '../Message/messageSlice';
 
 const style = {
     position: 'absolute',
@@ -103,9 +101,46 @@ export default function LoginModal() {
         handleClose()
     }, [auth.message])
 
+    const handleSendOTP = () => {
+        console.log('username: ', username);
+        if (!username.trim()) {
+            dispatch(notificationSlice.actions.showNotification({
+                type: 'error',
+                message: 'Vui lòng nhập tên đăng nhập!'
+            }));
+            return;
+        }
+
+        try {
+            console.log({ username })
+            dispatch(sendOTP({ username: username }))
+            dispatch(authSlice.actions.setUsernameOTP(username))
+            dispatch(notificationSlice.actions.showNotification({
+                type: 'success',
+                message: 'Mã xác thực đã được gửi qua email!'
+            }));
+        } catch (error) {
+            dispatch(notificationSlice.actions.showNotification({
+                type: 'error',
+                message: 'Gửi mã thất bại, vui lòng thử lại!'
+            }));
+        }
+    };
+
+    const handleForgotPassword = () => {
+        if (!username)
+            dispatch(notificationSlice.actions.showNotification({
+                type: 'error',
+                message: 'Vui lòng điền tên đăng nhập để lấy lại mật khẩu!'
+            }));
+        else
+            handleSendOTP()
+    }
+
     return (
         <div>
-            <Button onClick={handleOpen} variant='contained'>Sign in</Button>
+            <Button sx={{ whiteSpace: "nowrap", color: 'white' }}
+                onClick={handleOpen}>Đăng nhập</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -121,19 +156,16 @@ export default function LoginModal() {
                     <Box sx={{ display: openFormLogin }} key="formLogin">
                         <Stack row spacing={2}>
                             {/* {isLoading && <LinearProgress sx={{ mb: 5 }} />} */}
-                            <Box className='flex items-center justify-center'>
-                                <img className='w-10 h-10' src={require('../../images/logoMyClass.png')}></img>
-                                <Typography sx={{ color: `${theme.palette.textColor.main}` }} className='px-2' >
-                                    Sign in
-                                </Typography>
-                            </Box>
-                            <TextField id="username" label="Username" variant="outlined"
+                            <Typography sx={{ color: `${theme.palette.textColor.main}` }} className='px-2 text-center' >
+                                Đăng nhập
+                            </Typography>
+                            <TextField id="username" label="Tên đăng nhập" variant="outlined"
                                 onChange={(e) => {
                                     setUsername(e.target.value)
                                 }}
                             />
                             <FormControl sx={{ m: 1, width: '100%' }} variant="outlined">
-                                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                <InputLabel htmlFor="outlined-adornment-password">Mật khẩu</InputLabel>
                                 <OutlinedInput
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
@@ -158,9 +190,9 @@ export default function LoginModal() {
                             </FormControl>
                             <Button variant="contained"
                                 onClick={handleSignIn}
-                            >Submit</Button>
-                            <Typography sx={{ color: `${theme.palette.textColor.main}` }} variant="subtitle2" gutterBottom >
-                                Forgot password?
+                            >Xác nhận</Button>
+                            <Typography sx={{ color: `${theme.palette.textColor.main}` }} variant="subtitle2" gutterBottom onClick={handleForgotPassword} >
+                                Quên mật khẩu?
                             </Typography>
                             <Typography variant="subtitle2" gutterBottom
                                 sx={{ color: `${theme.palette.textColor.main}` }}
@@ -169,39 +201,36 @@ export default function LoginModal() {
                                     setOpenFormRegister('block')
                                 }}
                             >
-                                Sign up for an account
+                                Đăng ký tài khoản
                             </Typography>
                         </Stack>
                     </Box>
                     <Box sx={{ display: openFormRegister }} key="formRegister" >
-                        <Box className='flex items-center justify-center pb-5'>
-                            <img className='w-10 h-10' src={require('../../images/logoMyClass.png')}></img>
-                            <Typography variant='subtitle1' sx={{ color: `${theme.palette.textColor.main}` }} className='px-2'>Sign up</Typography>
-                        </Box>
+                        <Typography variant='subtitle1' sx={{ color: `${theme.palette.textColor.main}` }} className='px-2 text-center'>Đăng ký tài khoản</Typography>
                         <Grid container spacing={4} className='py-2'>
                             <Grid item xs={6}>
                                 <Stack row spacing={2}>
-                                    <TextField id="signup_username" label="Username" value={username} variant="outlined"
+                                    <TextField id="signup_username" label="Tên đăng nhập" value={username} variant="outlined"
                                         onChange={(e) => {
                                             setUsername(e.target.value)
                                         }}
                                     />
-                                    <TextField id="signup_password" type='password' value={password} label="Password" variant="outlined"
+                                    <TextField id="signup_password" type='password' value={password} label="Mật khẩu" variant="outlined"
                                         onChange={(e) => {
                                             setPassword(e.target.value)
                                         }}
                                     />
-                                    <TextField id="confirm_password" type='password' value={confirmPassword} label="Confirm password" variant="outlined"
+                                    <TextField id="confirm_password" type='password' value={confirmPassword} label="Nhập lại mật khẩu" variant="outlined"
                                         onChange={(e) => {
                                             setConfirmPassword(e.target.value)
                                         }}
                                     />
-                                    <TextField id="name" label="Full name" value={name} variant="outlined"
+                                    <TextField id="name" label="Họ và tên" value={name} variant="outlined"
                                         onChange={(e) => {
                                             setName(e.target.value)
                                         }}
                                     />
-                                    <TextField id="phone_number" label='Phone number' type="tel" variant="outlined"
+                                    <TextField id="phone_number" label='Số điện thoại' type="tel" variant="outlined"
                                         onChange={(e) => {
                                             setPhoneNumber(e.target.value)
                                         }}
@@ -215,7 +244,7 @@ export default function LoginModal() {
                                             setEmail(e.target.value)
                                         }}
                                     />
-                                    <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
+                                    <FormLabel id="demo-radio-buttons-group-label">Giới tính</FormLabel>
                                     <RadioGroup
                                         aria-labelledby="demo-radio-buttons-group-label"
                                         defaultValue="female"
@@ -229,20 +258,20 @@ export default function LoginModal() {
                                             '& .MuiFormControlLabel-label': {
                                                 color: `${theme.palette.textColor.main}`,  // Change this to the desired color
                                             },
-                                        }} control={<Radio value='female' />} label="Female" />
+                                        }} control={<Radio value='female' />} label="Nữ" />
                                         <FormControlLabel value="male" sx={{
                                             '& .MuiFormControlLabel-label': {
                                                 color: `${theme.palette.textColor.main}`,  // Change this to the desired color
                                             },
-                                        }} control={<Radio value='male' />} label="Male" />
+                                        }} control={<Radio value='male' />} label="Nam" />
                                         <FormControlLabel value="other" sx={{
                                             '& .MuiFormControlLabel-label': {
                                                 color: `${theme.palette.textColor.main}`,  // Change this to the desired color
                                             },
-                                        }} control={<Radio value='other' />} label="Other" />
+                                        }} control={<Radio value='other' />} label="Khác" />
                                     </RadioGroup>
                                     <FormControl fullWidth>
-                                        <InputLabel id="demo-simple-select-label">Address</InputLabel>
+                                        <InputLabel id="demo-simple-select-label">Địa chỉ</InputLabel>
                                         <Select
                                             labelId="demo-simple-select-label"
                                             id="demo-simple-select"
@@ -265,14 +294,14 @@ export default function LoginModal() {
                                             setOpenFormRegister('none')
                                         }}
                                     >
-                                        Sign in
+                                        Đăng nhập
                                     </Typography>
                                 </Stack>
                             </Grid>
                         </Grid>
                         <Button className='w-full' variant="contained"
                             onClick={handleRegister}
-                        >Submit</Button>
+                        >Xác nhận</Button>
                     </Box>
                 </Box>
             </Modal>

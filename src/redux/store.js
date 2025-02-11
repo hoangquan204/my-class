@@ -9,6 +9,11 @@ import commentSlice from "../components/Comment/commentSlice";
 import classRoomSlice from "../components/ClassRoom/classRoomSlice";
 import noteSlice from "../components/Note/noteSlice";
 import exerciseSlice from "../components/Exercise/exerciseSlice";
+import lessonSlice from "../components/Lesson/lessonSlice";
+import helperSlice from "../components/Helper/helperSlice";
+import exerciseResultSlice from "../components/ExerciseResult/exerciseResultSlice";
+import feedbackSlice from "../components/Contact/feedbackSlice";
+import analyticsSlice from "../components/Analytics/analyticsSlice";
 
 export default configureStore({
     reducer: {
@@ -22,5 +27,11 @@ export default configureStore({
         classRoom: classRoomSlice.reducer,
         note: noteSlice.reducer,
         exercise: exerciseSlice.reducer,
+        exerciseResult: exerciseResultSlice.reducer,
+        lesson: lessonSlice.reducer,
+        helper: helperSlice.reducer,
+        feedback: feedbackSlice.reducer,
+        admin: adminSlice.reducer,
+        analytics: analyticsSlice.reducer
     }
 })

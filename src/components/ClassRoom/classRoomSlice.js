@@ -30,8 +30,7 @@ export const createClassRoom = createAsyncThunk('class-room/create', async (valu
 
 export const addMember = createAsyncThunk('class-room/add-member', async (values) => {
     try {
-        console.log('endpoints: ', `/api/class-room/${values}`)
-        const { data } = await api.put(`/api/class-room/${values}`)
+        const { data } = await api.put("/api/class-room", values)
         return data
     } catch (error) {
         return error.message
@@ -43,13 +42,29 @@ export default createSlice({
     initialState: {
         list: [],
         listAll: [],
+        listRender: [],
+        page: 1,
+        totalPage: 0,
+        selectedClassRoomId: 0,
         error: false,
         loading: false,
         success: false,
         message: ''
     },
     reducers: {
-
+        refreshData: (state, action) => {
+            state.list = []
+        },
+        setSelectedClassRoom: (state, action) => {
+            state.selectedClassRoomId = action.payload
+        },
+        changePage: (state, action) => {
+            state.page = action.payload
+            state.listRender = state.listAll.filter((item, index) => {
+                return (index < action.payload * 6) && (index >= (action.payload - 1) * 6)
+            })
+            return state
+        }
     },
     extraReducers: builder => {
         builder
@@ -67,7 +82,7 @@ export default createSlice({
                 console.log(state.list)
                 state.error = false
                 state.success = true
-                state.message = 'Get list class room successfully!'
+                state.message = 'Lấy danh sách lớp học của bạn thành công!'
                 state.loading = false
 
                 return state
@@ -90,11 +105,20 @@ export default createSlice({
                 return state
             })
             .addCase(getListAllClassRoom.fulfilled, (state, action) => {
-                state.listAll = action.payload
-                console.log(state.listAll)
-                state.error = false
-                state.success = true
-                state.message = 'Get list all class room successfully!'
+                if (action.payload !== 'Network Error') {
+                    state.listAll = action.payload
+                    state.listRender = Array.isArray(state?.listAll) ? state?.listAll?.filter((item, index) => {
+                        return (index < 6) && (index >= 0)
+                    }) : []
+                    state.totalPage = Math.ceil(state.listAll?.length / 6)
+                    state.error = false
+                    state.success = true
+                    state.message = 'Lấy danh sách lớp học thành công!'
+                } else {
+                    state.error = true
+                    state.success = false
+                    state.message = 'Lấy danh sách lớp học không thành công!'
+                }
                 state.loading = false
 
                 return state
@@ -119,10 +143,10 @@ export default createSlice({
             .addCase(createClassRoom.fulfilled, (state, action) => {
                 console.log(action.payload)
                 state.list = [...state.list, action.payload]
-                state.listAll = [...state.list, action.payload]
+                state.listAll = [...state.listAll, action.payload]
                 state.error = false
                 state.success = true
-                state.message = 'Create news successfully!'
+                state.message = 'Tạo lớp học thành công!'
                 state.loading = false
 
                 return state
@@ -148,7 +172,7 @@ export default createSlice({
                 state.list = [...state.list, action.payload]
                 state.error = false
                 state.success = true
-                state.message = 'Create news successfully!'
+                state.message = 'Tham gia lớp học thành công!'
                 state.loading = false
 
                 return state

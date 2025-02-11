@@ -1,36 +1,54 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../config/api";
 
-export const getListAccount = createAsyncThunk('admin/get-list-account', async () => {
+export const getListUser = createAsyncThunk('admin/get-list-user', async () => {
     try {
-        const { data } = await api.get("/user")
+        const { data } = await api.get("/api/user")
         return data
     } catch (error) {
         return error.message
     }
 })
 
-export const getListOrder = createAsyncThunk('admin/get-list-order', async (values) => {
+export const getListFeedback = createAsyncThunk('admin/get-list-feedback', async (values) => {
     try {
-        const { data } = await api.get(`/order/list-order/${values}`)
+        const { data } = await api.get("/api/feedback")
         return data
     } catch (error) {
         return error.message
     }
 })
 
-export const getListMessage = createAsyncThunk('admin/get-list-message', async (values) => {
+export const setDisableStatusAccount = createAsyncThunk('admin/set-disable-status-account', async (values) => {
     try {
-        const { data } = await api.get(`/message/${values}`)
+        const { data } = await api.put(`/api/auth/disable/${values}`)
         return data
     } catch (error) {
         return error.message
     }
 })
 
-export const createMessageAdmin = createAsyncThunk('admin/create-message', async (values) => {
+export const setEnableStatusAccount = createAsyncThunk('admin/set-enable-status-account', async (values) => {
     try {
-        const { data } = await api.post(`/message/${values.userId}`, values.message)
+        const { data } = await api.put(`/api/auth/enable/${values}`)
+        return data
+    } catch (error) {
+        return error.message
+    }
+})
+
+export const setDisableStatusClassRoom = createAsyncThunk('admin/set-disable-status-class', async (values) => {
+    try {
+        const { data } = await api.put(`/api/class-room/disable/${values}`)
+        return data
+    } catch (error) {
+        return error.message
+    }
+})
+
+export const setEnableStatusClassRoom = createAsyncThunk('admin/set-enable-status-class', async (values) => {
+    try {
+        const { data } = await api.put(`/api/class-room/enable/${values}`)
         return data
     } catch (error) {
         return error.message
@@ -40,9 +58,8 @@ export const createMessageAdmin = createAsyncThunk('admin/create-message', async
 export default createSlice({
     name: 'admin',
     initialState: {
-        listAccount: [],
-        listOrder: [],
-        listMessage: [],
+        listUser: [],
+        listFeedback: [],
         error: false,
         loading: false,
         success: false,
@@ -53,8 +70,8 @@ export default createSlice({
     },
     extraReducers: builder => {
         builder
-            //GET LIST ACCOUNT
-            .addCase(getListAccount.pending, (state, action) => {
+            //GET LIST USER
+            .addCase(getListUser.pending, (state, action) => {
                 state.loading = true
                 state.error = false
                 state.message = ''
@@ -62,17 +79,17 @@ export default createSlice({
 
                 return state
             })
-            .addCase(getListAccount.fulfilled, (state, action) => {
+            .addCase(getListUser.fulfilled, (state, action) => {
                 console.log(action.payload)
-                state.listAccount = action.payload
+                state.listUser = action.payload
                 state.error = false
                 state.success = true
-                state.message = 'Get list account successfully!'
+                state.message = 'Lấy danh sách người dùng thành công!'
                 state.loading = false
 
                 return state
             })
-            .addCase(getListAccount.rejected, (state, action) => {
+            .addCase(getListUser.rejected, (state, action) => {
                 state.error = true
                 state.loading = false
                 state.success = false
@@ -82,8 +99,8 @@ export default createSlice({
                 return state
             })
 
-            //GET LIST ORDER
-            .addCase(getListOrder.pending, (state, action) => {
+            //GET LIST FEEDBACK
+            .addCase(getListFeedback.pending, (state, action) => {
                 state.loading = true
                 state.error = false
                 state.message = ''
@@ -91,27 +108,28 @@ export default createSlice({
 
                 return state
             })
-            .addCase(getListOrder.fulfilled, (state, action) => {
-                state.listOrder = action.payload
+            .addCase(getListFeedback.fulfilled, (state, action) => {
                 console.log(action.payload)
+                state.listFeedback = action.payload
                 state.error = false
                 state.success = true
-                state.message = 'Get list order successfully!'
+                state.message = 'Lấy danh sách phản hồi thành công!'
                 state.loading = false
 
                 return state
             })
-            .addCase(getListOrder.rejected, (state, action) => {
+            .addCase(getListFeedback.rejected, (state, action) => {
                 state.error = true
                 state.loading = false
                 state.success = false
                 state.message = ''
+                state.success = false
 
                 return state
             })
 
-            //GET LIST MESSAGE
-            .addCase(getListMessage.pending, (state, action) => {
+            //SET DISABLE STATUS ACOUNT
+            .addCase(setDisableStatusAccount.pending, (state, action) => {
                 state.loading = true
                 state.error = false
                 state.message = ''
@@ -119,27 +137,26 @@ export default createSlice({
 
                 return state
             })
-            .addCase(getListMessage.fulfilled, (state, action) => {
-                state.listMessage = action.payload
+            .addCase(setDisableStatusAccount.fulfilled, (state, action) => {
                 console.log(action.payload)
                 state.error = false
                 state.success = true
-                state.message = 'Get list message successfully!'
+                state.message = action.payload
                 state.loading = false
 
                 return state
             })
-            .addCase(getListMessage.rejected, (state, action) => {
+            .addCase(setDisableStatusAccount.rejected, (state, action) => {
                 state.error = true
                 state.loading = false
                 state.success = false
                 state.message = ''
+                state.success = false
 
                 return state
             })
-
-            //CREATE MESSAGE BY ADMIN
-            .addCase(createMessageAdmin.pending, (state, action) => {
+            //SET ENABLE STATUS ACCOUNT
+            .addCase(setEnableStatusAccount.pending, (state, action) => {
                 state.loading = true
                 state.error = false
                 state.message = ''
@@ -147,21 +164,76 @@ export default createSlice({
 
                 return state
             })
-            .addCase(createMessageAdmin.fulfilled, (state, action) => {
-                state.listMessage = [...state.listMessage, action.payload]
+            .addCase(setEnableStatusAccount.fulfilled, (state, action) => {
                 console.log(action.payload)
                 state.error = false
                 state.success = true
-                state.message = 'Create message by admin successfully!'
+                state.message = action.payload
                 state.loading = false
 
                 return state
             })
-            .addCase(createMessageAdmin.rejected, (state, action) => {
+            .addCase(setEnableStatusAccount.rejected, (state, action) => {
                 state.error = true
                 state.loading = false
                 state.success = false
                 state.message = ''
+                state.success = false
+
+                return state
+            })
+
+            //SET DISABLE STATUS CLASS
+            .addCase(setDisableStatusClassRoom.pending, (state, action) => {
+                state.loading = true
+                state.error = false
+                state.message = ''
+                state.success = false
+
+                return state
+            })
+            .addCase(setDisableStatusClassRoom.fulfilled, (state, action) => {
+                console.log(action.payload)
+                state.error = false
+                state.success = true
+                state.message = action.payload
+                state.loading = false
+
+                return state
+            })
+            .addCase(setDisableStatusClassRoom.rejected, (state, action) => {
+                state.error = true
+                state.loading = false
+                state.success = false
+                state.message = ''
+                state.success = false
+
+                return state
+            })
+            //SET ENABLE STATUS CLASS
+            .addCase(setEnableStatusClassRoom.pending, (state, action) => {
+                state.loading = true
+                state.error = false
+                state.message = ''
+                state.success = false
+
+                return state
+            })
+            .addCase(setEnableStatusClassRoom.fulfilled, (state, action) => {
+                console.log(action.payload)
+                state.error = false
+                state.success = true
+                state.message = action.payload
+                state.loading = false
+
+                return state
+            })
+            .addCase(setEnableStatusClassRoom.rejected, (state, action) => {
+                state.error = true
+                state.loading = false
+                state.success = false
+                state.message = ''
+                state.success = false
 
                 return state
             })
