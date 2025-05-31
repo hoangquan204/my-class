@@ -14,6 +14,7 @@ import helperSlice from "../components/Helper/helperSlice";
 import exerciseResultSlice from "../components/ExerciseResult/exerciseResultSlice";
 import feedbackSlice from "../components/Contact/feedbackSlice";
 import analyticsSlice from "../components/Analytics/analyticsSlice";
+import scheduleSlice from "../components/Schedule/scheduleSlice";
 
 export default configureStore({
     reducer: {
@@ -32,6 +33,7 @@ export default configureStore({
         helper: helperSlice.reducer,
         feedback: feedbackSlice.reducer,
         admin: adminSlice.reducer,
-        analytics: analyticsSlice.reducer
+        analytics: analyticsSlice.reducer,
+        schedule: scheduleSlice.reducer,
     }
 })

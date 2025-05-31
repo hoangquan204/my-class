@@ -15,4 +15,5 @@ export const getLessonSelector = state => state.lesson
 export const getHelperSelector = state => state.helper
 export const getFeedbackSelector = state => state.feedback
 export const getAnalyticsSelector = state => state.analytics
+export const getScheduleSelector = state => state.schedule
 

@@ -16,6 +16,7 @@ import { uploadFile } from "../../others/UploadFile/uploadSlice";
 import notificationSlice from "../Notification/notificationSlice";
 import { useNavigate } from "react-router-dom";
 import BreadcrumbsCustom from "../BreadcrumbsCustom/BreadcrumbsCustom";
+import AuthModal from "../User/AuthModal"
 
 const style = {
     position: 'absolute',
@@ -33,6 +34,7 @@ function Class() {
     const classRoom = useSelector(getClassRoomSelector)
     const upload = useSelector(getUploadFileSelector)
     const theme = useSelector(getThemeSelector)
+    const auth = useSelector(getAuthSelector)
 
     const dispatch = useDispatch()
 
@@ -216,53 +218,66 @@ function Class() {
 
     return <Box className='p-4'>
         <BreadcrumbsCustom secondary={breadcumbs} primary={'Lớp học'} />
-        {createClassRoomModal}
-        <div className='flex items-center justify-between'>
-            <Typography className='text-primary border-l-4 border-l-primary' >
-                <span className='text-xl font-semibold px-1'>Lớp học của bạn</span>
-            </Typography>
-            <div className='flex items-center gap-x-2'>
-                <Tooltip title='Tìm lớp học'>
-                    <Button variant='outlined' onClick={(() => {
-                        navigate("/list-class")
-                    })}>
-                        <SearchIcon></SearchIcon>
-                    </Button>
-                </Tooltip>
-                <Tooltip title='Tạo lớp học'>
-                    <Button variant='contained' onClick={toggleOpenCreateClassRoomModal}>
-                        <AddBoxIcon></AddBoxIcon>
-                    </Button>
-                </Tooltip>
-            </div>
-        </div>
-        <div className='flex items-center justify-around gap-x-2 gap-y-2 flex-wrap'>
-            {Array.isArray(classRoom?.list) && classRoom.list.length > 0 ? classRoom?.list?.map((item) => {
-                return <ClassRoomCard isMember={true} classRoom={item}></ClassRoomCard>
-            }) : (
-                <Box
-                    className="flex flex-col items-center justify-center"
-                    sx={{ textAlign: "center", color: theme.palette.textColor.main, py: 4 }}
-                >
-                    <Typography variant="h6" gutterBottom>
-                        Bạn chưa tham gia lớp học nào!
+        {auth.username ?
+            <>
+                {createClassRoomModal}
+                <div className='flex items-center justify-between'>
+                    <Typography className='text-primary border-l-4 border-l-primary' >
+                        <span className='text-xl font-semibold px-1'>Lớp học của bạn</span>
                     </Typography>
-                    <Typography variant="body2" sx={{ marginBottom: 2 }}>
-                        Hãy tìm kiếm lớp học yêu thích ngay.
-                    </Typography>
-                    <Button
-                        variant="outlined"
-                        onClick={() => {
-                            navigate("/list-class");
-                        }}
-                    >
-                        Tìm kiếm lớp học
-                    </Button>
-                </Box>
-            )
-            }
-        </div>
-    </Box>
+                    <div className='flex items-center gap-x-2'>
+                        <Tooltip title='Tìm lớp học'>
+                            <Button variant='outlined' onClick={(() => {
+                                navigate("/list-class")
+                            })}>
+                                <SearchIcon></SearchIcon>
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title='Tạo lớp học'>
+                            <Button variant='contained' onClick={toggleOpenCreateClassRoomModal}>
+                                <AddBoxIcon></AddBoxIcon>
+                            </Button>
+                        </Tooltip>
+                    </div>
+                </div>
+                <div className='flex items-center justify-around gap-x-2 gap-y-2 flex-wrap'>
+                    {Array.isArray(classRoom?.list) && classRoom.list.length > 0 ? classRoom?.list?.map((item) => {
+                        return <ClassRoomCard isMember={true} classRoom={item}></ClassRoomCard>
+                    }) : (
+                        <Box
+                            className="flex flex-col items-center justify-center"
+                            sx={{ textAlign: "center", color: theme.palette.textColor.main, py: 4 }}
+                        >
+                            <Typography variant="h6" gutterBottom>
+                                Bạn chưa tham gia lớp học nào!
+                            </Typography>
+                            <Typography variant="body2" sx={{ marginBottom: 2 }}>
+                                Hãy tìm kiếm lớp học yêu thích ngay.
+                            </Typography>
+                            <Button
+                                variant="outlined"
+                                onClick={() => {
+                                    navigate("/list-class");
+                                }}
+                            >
+                                Tìm kiếm lớp học
+                            </Button>
+                        </Box>
+                    )
+                    }
+                </div>
+            </> :
+            <Box className="mt-6 flex flex-col items-center justify-center text-center">
+                <Typography className="subtitle1 mb-2">
+                    Bạn cần đăng nhập để lập lịch học
+                </Typography>
+                <div className='w-[100px] bg-primary m-2 rounded-md'>
+                    <AuthModal />
+                </div>
+            </Box>
+        }
+
+    </Box >
 }
 
 export default Class;

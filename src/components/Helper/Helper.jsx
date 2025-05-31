@@ -73,7 +73,7 @@ function Helper() {
   });
 
   useEffect(() => {
-    const welcomeMessage = { role: "bot", text: "Chào mừng bạn đến với My class! Tôi là trợ lý ảo, bạn có cần tôi giúp gì không?" };
+    const welcomeMessage = { role: "bot", text: "Chào mừng bạn đến với My class! Tôi là Chatbot, bạn có cần tôi giúp gì không?" };
     setMessages([welcomeMessage]);
   }, []);
 
@@ -190,7 +190,7 @@ function Helper() {
             position: 'fixed',
             bottom: 80,
             right: 16,
-            width: 400,
+            width: 450,
             height: 600,
             display: 'flex',
             flexDirection: 'column',
@@ -258,7 +258,7 @@ function Helper() {
               </Box>
               <Button onClick={() => {
                 setOpenWiki(false)
-              }}>Trợ lý ảo</Button>
+              }}>Chatbot</Button>
             </> :
             <>
               <Typography variant="h6" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", backgroundColor: "primary.main", color: "white", padding: 2, borderRadius: 1 }}>
@@ -271,7 +271,7 @@ function Helper() {
                     <SmartToyIcon sx={{ fontSize: '60' }}></SmartToyIcon>
                   </StyledBadge>
                   <div className='flex flex-col'>
-                    <Typography variant='subtitle1'>Nhắn tin với Trợ lý ảo</Typography>
+                    <Typography variant='subtitle1'>Nhắn tin với Chatbot</Typography>
                     <Typography variant='caption'>Thường trả lời sau vài giây</Typography>
                   </div>
                 </div>

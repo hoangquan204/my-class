@@ -14,6 +14,7 @@ import Home from "../components/Home";
 import Terms from "../components/Terms";
 import Contact from "../components/Contact";
 import ExcerciseResultDetail from "../components/ExerciseResult/ExerciseResultDetail";
+import Schedule from "../components/Schedule";
 import { useSelector } from "react-redux";
 import { getThemeSelector } from "../redux/selector";
 
@@ -36,6 +37,7 @@ function UserRouter() {
                 <Route path='/terms' element={<Terms></Terms>}></Route>
                 <Route path='/contact' element={<Contact></Contact>}></Route>
                 <Route path='/exercise-result/:id' element={<ExcerciseResultDetail></ExcerciseResultDetail>}></Route>
+                <Route path='/schedule' element={<Schedule></Schedule>}></Route>
                 <Route path='/*' element={<NotFound></NotFound>}></Route>
             </Routes>
         </div>

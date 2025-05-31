@@ -10,10 +10,10 @@ const StatisticsCard = ({ title, value, icon: Icon, bgColor }) => {
                 <Icon className="text-2xl text-gray-700" />
             </div>
             <CardContent className="flex-1">
-                <Typography variant="h6" className="text-primary">
+                <Typography variant="subtitle1" className="">
                     {title}
                 </Typography>
-                <Typography variant="h4" className="font-bold">
+                <Typography variant="h5" className="text-primary mt-2">
                     {value}
                 </Typography>
             </CardContent>

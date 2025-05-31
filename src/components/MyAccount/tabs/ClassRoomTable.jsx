@@ -134,7 +134,7 @@ export default function ClassRoomTable() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {Array.isArray(classRoom?.listAll) &&
+                    {Array.isArray(classRoom?.list) &&
                         classRoom?.list?.map((item) => (
                             <>
                                 <TableRow>

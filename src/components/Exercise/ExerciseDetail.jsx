@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getExerciseSelector, getThemeSelector } from "../../redux/selector";
-import { Avatar, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, IconButton, Modal, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardMedia, Divider, FormControl, FormControlLabel, FormLabel, IconButton, Modal, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
 import moment from "moment/moment";
 import CountdownTimer from "../CountdownTimer";
 import FlagIcon from '@mui/icons-material/Flag';
 import { createExerciseResult } from "../ExerciseResult/exerciseResultSlice";
 import notificationSlice from "../Notification/notificationSlice";
 import BreadcrumbsCustom from "../BreadcrumbsCustom/BreadcrumbsCustom";
+import { getListSchedule } from "../Schedule/scheduleSlice";
 const style = {
     position: 'absolute',
     top: '50%',
@@ -68,6 +69,7 @@ function ExcerciseDetail() {
             const specificDateTime = moment(item?.createAt);
             setFormattedDateTime(specificDateTime.format('DD-MM-YYYY HH:mm:ss'))
         }
+        dispatch(getListSchedule());
     }, []);
 
     const handleEvalueExercise = () => {
@@ -133,7 +135,7 @@ function ExcerciseDetail() {
             path: '/class'
         }
     ]
-    
+
     return <Box className='px-10'>
         {evalueExerciseModal}
         <BreadcrumbsCustom secondary={breadcumbs} primary={selectedExercise?.title} />
@@ -154,28 +156,64 @@ function ExcerciseDetail() {
         <div className='flex justify-between py-5'>
             <div className='flex flex-col px-10'>
                 {Array.isArray(selectedExercise?.questions) && selectedExercise?.questions.map((question, index) => {
-                    return <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">{`Câu ${index + 1}: ${question.content}`}</FormLabel>
-                        <RadioGroup
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            // Liên kết trạng thái
-                            name="radio-buttons-group"
-                        >
-                            {question.answers.map((answer) => {
-                                return <FormControlLabel
-                                    sx={{ color: theme.palette.textColor.main }}
-                                    value={answer.content} control={<Radio onClick={(e) => {
-                                        const newAnswers = { ...answers }
-                                        newAnswers[question.id] = {
-                                            questionIndex: index + 1,
-                                            answerId: answer.id,
-                                            content: answer.content,
+                    return (
+                        <FormControl key={question.id} className="mb-8 w-full">
+                            <FormLabel id={`question-label-${question.id}`} className="text-lg font-semibold">
+                                {`Câu ${index + 1}: ${question.content}`}
+                            </FormLabel>
+
+                            {question.img && (
+                                <Card
+                                    sx={{
+                                        maxWidth: 600,
+                                        borderRadius: 3,
+                                        boxShadow: 3,
+                                        overflow: "hidden",
+                                        my: 2,
+                                    }}
+                                    className="mx-auto"
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={question.img}
+                                        alt={`Câu hỏi ${index + 1}`}
+                                        className="object-cover"
+                                        sx={{
+                                            height: { xs: 200, sm: 300, md: 400 },
+                                            width: "100%",
+                                        }}
+                                    />
+                                </Card>
+                            )}
+
+                            <RadioGroup
+                                aria-labelledby={`question-label-${question.id}`}
+                                name={`radio-group-${question.id}`}
+                            >
+                                {question.answers.map((answer) => (
+                                    <FormControlLabel
+                                        key={answer.id}
+                                        sx={{ color: theme.palette.textColor.main }}
+                                        value={answer.content}
+                                        control={
+                                            <Radio
+                                                onClick={() => {
+                                                    const newAnswers = { ...answers };
+                                                    newAnswers[question.id] = {
+                                                        questionIndex: index + 1,
+                                                        answerId: answer.id,
+                                                        content: answer.content,
+                                                    };
+                                                    setAnswers(newAnswers);
+                                                }}
+                                            />
                                         }
-                                        setAnswers(newAnswers)
-                                    }} />} label={answer.content} />
-                            })}
-                        </RadioGroup>
-                    </FormControl>
+                                        label={answer.content}
+                                    />
+                                ))}
+                            </RadioGroup>
+                        </FormControl>
+                    );
                 })}
             </div>
             <div className='flex w-[20%] flex-col gap-y-2'>

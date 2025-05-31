@@ -72,7 +72,7 @@ function ClassRoomDetail() {
         </div>
         <div className='flex items-center justify-between py-4'>
             <div className='flex flex-col gap-y-2'>
-                <span className={`font-semibold text-2xl text-[${theme.palette.textColor.main}]`}>{selectedClass?.name}</span>
+                <span className={`text-primary font-bold text-2xl text-[${theme.palette.textColor.main}]`}>{selectedClass?.name}</span>
                 <Typography variant='body' className={`text-[${theme.palette.textColor.main}]`}>{selectedClass?.description}</Typography>
 
             </div>

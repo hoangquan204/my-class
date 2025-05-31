@@ -7,6 +7,7 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import Helper from '../Helper/Helper'
 import { getThemeSelector } from '../../redux/selector'
+import DevProfileModal from '../DevProfile/DevProfileModal'
 const Footer = () => {
     const theme = useSelector(getThemeSelector)
     return (
@@ -56,11 +57,11 @@ const Footer = () => {
                         <Link href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&to=quanpogba888@gmail.com" target="_blank">quanpogba888@gmail.com</Link>
                     </Typography>
                     <span className='text-xl font-semibold border-l-[4px] border-primary'>
-                        <span className={`px-1 text-[${theme.palette.textColor.main}]`}>Liên hệ qua điện thoại:</span>
+                        <span className={`px-1 text-[${theme.palette.textColor.main}]`}>Thông tin lập trình viên:</span>
                     </span>
                     <Typography className='flex items-center gap-x-2'>
                         <LocalPhoneIcon></LocalPhoneIcon>
-                        <span className={`text-[${theme.palette.textColor.main}]`}>012345678</span>
+                        <DevProfileModal></DevProfileModal>
                     </Typography>
                 </Box>
             </Box>

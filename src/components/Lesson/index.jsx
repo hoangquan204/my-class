@@ -26,7 +26,8 @@ function Lesson({ classRoomId }) {
 
     return <Box>
         {
-            auth?.userDetail?.id === selectedClassRoom?.teacher?.id &&
+            // auth?.userDetail?.id === selectedClassRoom?.teacher?.id &&
+            true &&
             <div className="py-2 text-center">
                 <Button
                     variant="outlined"

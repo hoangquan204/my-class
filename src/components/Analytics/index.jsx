@@ -27,6 +27,7 @@ const HorizontalBarChart = ({ countEducationField, countScienceField, countTechn
                 <BarChart
                     layout="vertical"
                     data={data}
+
                     margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
@@ -34,7 +35,7 @@ const HorizontalBarChart = ({ countEducationField, countScienceField, countTechn
                     <YAxis dataKey="name" type="category" />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="count" fill={theme.palette.primary.main} name="Số Lượng" />
+                    <Bar dataKey="count" fill={'#1976d2'} name="Số Lượng" />
                 </BarChart>
             </ResponsiveContainer>
         </div>

@@ -20,6 +20,7 @@ import ClassIcon from '@mui/icons-material/Class';
 import HomeIcon from '@mui/icons-material/Home';
 import CallIcon from '@mui/icons-material/Call';
 import SecurityIcon from '@mui/icons-material/Security';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
 
 export default function Menu() {
     const [open, setOpen] = React.useState(false);
@@ -75,6 +76,16 @@ export default function Menu() {
                         <ListItemText primary={'Danh sách lớp học'} />
                     </ListItemButton>
                 </ListItem>
+                <ListItem key={'Lập lịch học'} disablePadding>
+                    <ListItemButton onClick={(e) => {
+                        navigate("/schedule")
+                    }}>
+                        <ListItemIcon>
+                            <WatchLaterIcon> </WatchLaterIcon>
+                        </ListItemIcon>
+                        <ListItemText primary={'Lập lịch học'} />
+                    </ListItemButton>
+                </ListItem>
                 <ListItem key={'Liên hệ'} disablePadding>
                     <ListItemButton onClick={(e) => {
                         navigate("/contact")
@@ -95,14 +106,14 @@ export default function Menu() {
                         <ListItemText primary={'Điều khoản dịch vụ'} />
                     </ListItemButton>
                 </ListItem>
-                <ListItem key='Dark mode' disablePadding onClick={handleTurnMode}>
+                {/* <ListItem key='Dark mode' disablePadding onClick={handleTurnMode}>
                     <ListItemButton>
                         <ListItemIcon>
                             {myTheme.palette.mode === 'light' ? <WbSunnyIcon></WbSunnyIcon> : <DarkModeIcon></DarkModeIcon>}
                         </ListItemIcon>
                         {myTheme.palette.mode === 'light' ? <ListItemText sx={{ color: `${theme.palette.textColor.main}` }} primary='Light mode' /> : <ListItemText sx={{ color: `${theme.palette.textColor.main}` }} primary='Dark mode' />}
                     </ListItemButton>
-                </ListItem>
+                </ListItem> */}
                 {auth?.userDetail?.account?.role === 'ADMIN' &&
                     <ListItem key='admin_page' disablePadding onClick={() => {
                         navigate("/admin")

@@ -37,6 +37,24 @@ export const addMember = createAsyncThunk('class-room/add-member', async (values
     }
 })
 
+export const getPlan = createAsyncThunk('class-room/get-plan', async (values) => {
+    try {
+        const { data } = await api.get(`/api/plan/${values}`)
+        return data
+    } catch (error) {
+        return error.message
+    }
+})
+
+export const createPlan = createAsyncThunk('class-room/create-plan', async (values) => {
+    try {
+        const { data } = await api.post("/api/plan", values)
+        return data
+    } catch (error) {
+        return error.message
+    }
+})
+
 export default createSlice({
     name: 'classRoom',
     initialState: {
@@ -49,7 +67,8 @@ export default createSlice({
         error: false,
         loading: false,
         success: false,
-        message: ''
+        message: '',
+        plan: {}
     },
     reducers: {
         refreshData: (state, action) => {
@@ -178,6 +197,58 @@ export default createSlice({
                 return state
             })
             .addCase(addMember.rejected, (state, action) => {
+                state.error = true
+                state.loading = false
+                state.success = false
+                state.message = ''
+
+                return state
+            })
+
+            //GET PLAN
+            .addCase(getPlan.pending, (state, action) => {
+                state.loading = true
+                state.error = false
+                state.message = ''
+
+                return state
+            })
+            .addCase(getPlan.fulfilled, (state, action) => {
+                state.plan = action.payload
+                state.error = false
+                state.success = true
+                state.message = 'Lấy kế hoạch lớp học thành công!'
+                state.loading = false
+
+                return state
+            })
+            .addCase(getPlan.rejected, (state, action) => {
+                state.error = true
+                state.loading = false
+                state.success = false
+                state.message = ''
+
+                return state
+            })
+
+            //CREATE PLAN
+            .addCase(createPlan.pending, (state, action) => {
+                state.loading = true
+                state.error = false
+                state.message = ''
+
+                return state
+            })
+            .addCase(createPlan.fulfilled, (state, action) => {
+                state.plan = action.payload
+                state.error = false
+                state.success = true
+                state.message = 'Tạo kế hoạch thành công!'
+                state.loading = false
+
+                return state
+            })
+            .addCase(createPlan.rejected, (state, action) => {
                 state.error = true
                 state.loading = false
                 state.success = false

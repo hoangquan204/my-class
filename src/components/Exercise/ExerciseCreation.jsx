@@ -2,14 +2,19 @@ import { Box, Button, Divider, FormControl, FormControlLabel, FormLabel, IconBut
 import { useState } from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import { useDispatch, useSelector } from "react-redux";
-import { getExerciseSelector, getThemeSelector } from "../../redux/selector";
+import { getExerciseSelector, getThemeSelector, getUploadFileSelector } from "../../redux/selector";
 import { createExercise } from "./exerciseSlice";
 import notificationSlice from "../Notification/notificationSlice";
 import BreadcrumbsCustom from "../BreadcrumbsCustom/BreadcrumbsCustom";
+import { uploadFile } from "../../others/UploadFile/uploadSlice";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { CircularProgress } from '@mui/material';
+import styled from "styled-components";
 
 function ExerciseCreation() {
     const exercise = useSelector(getExerciseSelector)
     const theme = useSelector(getThemeSelector)
+    const upload = useSelector(getUploadFileSelector)
 
     const [open, setOpen] = useState(false)
 
@@ -17,6 +22,8 @@ function ExerciseCreation() {
     const [description, setDescription] = useState('')
     const [time, setTime] = useState(0)
     const [questions, setQuestions] = useState([])
+    const [thumbnail, setThumbnail] = useState(null)
+    const [thumbnailUrl, setThumbnailUrl] = useState('')
 
     const [questionContent, setQuestionContent] = useState('')
     const [answerA, setAnswerA] = useState('')
@@ -40,6 +47,16 @@ function ExerciseCreation() {
         boxShadow: 24,
         p: 4,
     };
+
+    const VisuallyHiddenInput = styled('input')({
+        clip: 'rect(0 0 0 0)',
+        clipPath: 'inset(50%)',
+        overflow: 'hidden',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        whiteSpace: 'nowrap'
+    });
 
     const handleEditQuestion = (item) => {
         const index = questions.find((curr) => {
@@ -67,7 +84,7 @@ function ExerciseCreation() {
     }
 
     const handleCreateQuestion = () => {
-        setQuestions([...questions, { id: questions.length, content: questionContent, answers: [answerA, answerB, answerC, answerD] }])
+        setQuestions([...questions, { id: questions.length, content: questionContent, answers: [answerA, answerB, answerC, answerD], img: thumbnailUrl }])
         handleResetValue()
         toggleOpenQuestionCreateModal()
     }
@@ -76,6 +93,7 @@ function ExerciseCreation() {
         const questionCreationRequests = questions.map((item) => {
             return {
                 content: item.content,
+                img: item.img,
                 correctAnswer: item.answers[0],
                 incorrectAnswers: [item.answers[1], item.answers[2], item.answers[3]]
             }
@@ -105,6 +123,28 @@ function ExerciseCreation() {
             }))
     }
 
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        setThumbnail(file)
+        if (file) {
+            const imageUrl = URL.createObjectURL(file); // Tạo URL từ file
+            setThumbnailUrl(imageUrl); // Lưu URL vào state
+        }
+    };
+
+    const handleSetThumbnail = () => {
+        if (thumbnail !== null) {
+            const formData = new FormData();
+            formData.append('file', thumbnail)
+            dispatch(uploadFile(formData))
+        } else {
+            dispatch(notificationSlice.actions.showNotification({
+                type: 'error',
+                message: 'Selected file is null!'
+            }))
+        }
+    }
+
     const questionCreateModal = (
         <Modal
             open={open}
@@ -117,6 +157,32 @@ function ExerciseCreation() {
                     <TextField id="filled-basic" label="Câu hỏi" value={questionContent} variant='standard' onChange={(e) => {
                         setQuestionContent(e.target.value)
                     }} />
+                    {upload.loading ?
+                        <div className='w-[150px] h-[100px] flex'>
+                            <CircularProgress className='m-auto'></CircularProgress>
+                        </div>
+                        :
+                        <div className='flex w-full'>
+                            <img className='w-[250px] h-[200px] m-auto object-cover  rounded-md' src={thumbnailUrl || 'https://cdn.pixabay.com/photo/2023/09/04/17/48/flamingos-8233303_1280.jpg'}></img>
+                        </div>
+                    }
+                    <div className='flex justify-center gap-x-2 items-center w-full'>
+                        <Button
+                            component="label"
+                            role={undefined}
+                            variant="outlined"
+                            tabIndex={-1}
+                            startIcon={<CloudUploadIcon />}
+                        >
+                            Tải ảnh lên
+                            <VisuallyHiddenInput
+                                type="file"
+                                onChange={handleImageChange}
+                                multiple
+                            />
+                        </Button>
+                        <Button variant='contained' onClick={handleSetThumbnail}>Xác nhận</Button>
+                    </div>
                     <Divider></Divider>
                     <TextField id="outlined-basic" label="Câu đúng" value={answerA} onChange={(e) => {
                         setAnswerA(e.target.value)
