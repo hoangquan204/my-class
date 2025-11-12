@@ -17,6 +17,7 @@ const StatisticsCard = ({ title, value, icon: Icon, bgColor }) => {
                     {value}
                 </Typography>
             </CardContent>
+
         </Card>
     );
 };

@@ -15,6 +15,8 @@ import exerciseResultSlice from "../components/ExerciseResult/exerciseResultSlic
 import feedbackSlice from "../components/Contact/feedbackSlice";
 import analyticsSlice from "../components/Analytics/analyticsSlice";
 import scheduleSlice from "../components/Schedule/scheduleSlice";
+import { video } from "@cloudinary/url-gen/qualifiers/source";
+import videoSlice from "../components/VideoPlayer/videoSlice";
 
 export default configureStore({
     reducer: {
@@ -35,5 +37,6 @@ export default configureStore({
         admin: adminSlice.reducer,
         analytics: analyticsSlice.reducer,
         schedule: scheduleSlice.reducer,
+        video: videoSlice.reducer
     }
 })

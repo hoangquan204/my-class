@@ -8,6 +8,8 @@ import MemberList from '../MemberList';
 import Lesson from '../Lesson';
 import Exercise from '../Exercise';
 import PlanStepper from '../PlanStepper';
+import CourseVideos from '../VideoPlayer/CourseVideos';
+import FlashCard from '../FlashCard';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -53,8 +55,10 @@ export default function BasicTabs({ classRoom }) {
                     <Tab label="Kế hoạch" {...a11yProps(0)} />
                     <Tab label="Bài giảng" {...a11yProps(1)} />
                     <Tab label="Bài tập" {...a11yProps(2)} />
-                    <Tab label="Thông báo" {...a11yProps(3)} />
-                    <Tab label="Thành viên" {...a11yProps(4)} />
+                    <Tab label="Video" {...a11yProps(3)} />
+                    <Tab label="Thẻ ghi nhớ" {...a11yProps(4)} />
+                    <Tab label="Thông báo" {...a11yProps(5)} />
+                    <Tab label="Thành viên" {...a11yProps(6)} />
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -66,10 +70,16 @@ export default function BasicTabs({ classRoom }) {
             <CustomTabPanel value={value} index={2} sx={{ display: 'flex' }}>
                 <Exercise classRoomId={classRoom.id}></Exercise>
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={3}>
+              <CustomTabPanel value={value} index={3}>
+                <CourseVideos classRoomId={classRoom?.id}></CourseVideos>
+            </CustomTabPanel>
+             <CustomTabPanel value={value} index={4}>
+                <FlashCard classRoomId={classRoom?.id}></FlashCard>
+            </CustomTabPanel>
+             <CustomTabPanel value={value} index={5}>
                 <Note classRoomId={classRoom?.id}></Note>
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={4}>
+            <CustomTabPanel value={value} index={6}>
                 <MemberList members={classRoom?.members} teacher={classRoom?.teacher}></MemberList>
             </CustomTabPanel>
         </Box>

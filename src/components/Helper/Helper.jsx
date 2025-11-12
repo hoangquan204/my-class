@@ -37,7 +37,7 @@ function Helper() {
   const [input, setInput] = useState("");
   const [inputWiki, setInputWiki] = useState("")
 
-  const genAI = new GoogleGenerativeAI("AIzaSyDwdcPo0iYZNvGYZ5uhGnHrsIWCio_T_kQ");
+  const genAI = new GoogleGenerativeAI("AIzaSyBgRUI7djZi3G76J2eOqLas4wRAr-pthwA");
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const [open, setOpen] = useState(false)
   const [isOpenWiki, setOpenWiki] = useState(false)
@@ -90,7 +90,7 @@ function Helper() {
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error:", error);
-      const errorMessage = { role: "bot", text: "Xin lỗi, đã có lỗi xảy ra." };
+      const errorMessage = { role: "bot", text: "Xin lỗi, hệ thống AI đang quá tải. Vui lòng thử lại sau vài phút." };
       setMessages((prev) => [...prev, errorMessage]);
     }
   };

@@ -17,6 +17,8 @@ import ExcerciseResultDetail from "../components/ExerciseResult/ExerciseResultDe
 import Schedule from "../components/Schedule";
 import { useSelector } from "react-redux";
 import { getThemeSelector } from "../redux/selector";
+import ChatRoom from "../components/ChatRoom";
+import CourseVideos from "../components/VideoPlayer/CourseVideos";
 
 function UserRouter() {
     const theme = useSelector(getThemeSelector)
@@ -38,6 +40,7 @@ function UserRouter() {
                 <Route path='/contact' element={<Contact></Contact>}></Route>
                 <Route path='/exercise-result/:id' element={<ExcerciseResultDetail></ExcerciseResultDetail>}></Route>
                 <Route path='/schedule' element={<Schedule></Schedule>}></Route>
+                <Route path='/chat' element={<ChatRoom></ChatRoom>}></Route>               
                 <Route path='/*' element={<NotFound></NotFound>}></Route>
             </Routes>
         </div>
