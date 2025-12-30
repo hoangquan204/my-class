@@ -1,119 +1,130 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@mui/material";
-import { Button } from "@mui/material";
-import { Volume2, RotateCcw } from "lucide-react";
-import { motion } from "framer-motion";
+// components/FlashcardTopics.jsx
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, Button, Typography, Box } from "@mui/material";
+import FlashCardModal from "./FlashCardModal";
+import { useDispatch, useSelector } from "react-redux";
+import { get } from "react-scroll/modules/mixins/scroller";
+import { getAuthSelector, getClassRoomSelector, getFlashCardSelector, getThemeSelector } from "../../redux/selector";
+import { getListFlashCard } from "./flashcardSlice";
+import FlashCardCreationModal from "./FlashCardCreationModal";
 
-export default function FlashCard() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [flipped, setFlipped] = useState(false);
-  const [learned, setLearned] = useState([]);
-  const [reviewed, setReviewed] = useState([]);
+export default function FlashCards({ classRoomId }) {
+  const flashcard = useSelector(getFlashCardSelector);
 
-  const cards = [
-  { en: "apple", vi: "quả táo" },
-  { en: "banana", vi: "quả chuối" },
-  { en: "book", vi: "quyển sách" },
-  { en: "friend", vi: "bạn bè" },
-];
+  const theme = useSelector(getThemeSelector)
+
+  // const auth = useSelector(getAuthSelector)
+
+  // const classRoom = useSelector(getClassRoomSelector)
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+  if (classRoomId) {
+    dispatch(getListFlashCard(classRoomId));
+  }
+}, [classRoomId]);
 
 
-  const currentCard = cards[currentIndex];
-  const progress = (learned.length / cards.length) * 100;
+  //  const [selectedClassRoom, setSelectedClassRoom] = useState({})
+  
+  //     useEffect(() => {
+  //         const result = classRoom?.listAll?.find((item) => {
+  //             console.log('item: ', item)
+  //             return item.id === parseInt(classRoomId)
+  //         })
+  //         setSelectedClassRoom(result)
+  //     }, [])
 
-  // Phát âm tiếng Anh
-  const speak = (text) => {
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "en-US";
-    speechSynthesis.speak(utter);
-  };
-
-  const handleFlip = () => setFlipped(!flipped);
-
-  const handleRemember = (remembered) => {
-    if (!reviewed.includes(currentIndex)) {
-      setReviewed([...reviewed, currentIndex]);
-      if (remembered) setLearned([...learned, currentIndex]);
-    }
-    if (currentIndex < cards.length - 1) {
-      setFlipped(false);
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const handleRestart = () => {
-    setCurrentIndex(0);
-    setFlipped(false);
-    setLearned([]);
-    setReviewed([]);
-  };
+    // data/flashcardTopics.js
+//  const flashcardTopics = [
+//   {
+//     id: 1,
+//     name: "Trái cây",
+//     description: "Các loại trái cây cơ bản",
+//     image: "https://cdn.pixabay.com/photo/2025/11/06/10/17/flying-9940425_1280.jpg",
+//     cards: [
+//       { en: "apple", vi: "quả táo" },
+//       { en: "banana", vi: "quả chuối" },
+//       { en: "orange", vi: "quả cam" },
+//     ],
+//   },
+//   {
+//     id: 2,
+//     name: "Động vật",
+//     description: "Các loài động vật phổ biến",
+//     image: "https://cdn.pixabay.com/photo/2025/11/06/19/16/beach-9941440_1280.jpg",
+//     cards: [
+//       { en: "cat", vi: "con mèo" },
+//       { en: "dog", vi: "con chó" },
+//       { en: "bird", vi: "con chim" },
+//     ],
+//   },
+//   {
+//     id: 3,
+//     name: "Đồ vật",
+//     description: "Các đồ vật xung quanh",
+//     image: "https://cdn.pixabay.com/photo/2025/10/16/08/18/shark-9897726_1280.jpg",
+//     cards: [
+//       { en: "book", vi: "quyển sách" },
+//       { en: "pen", vi: "cái bút" },
+//       { en: "chair", vi: "cái ghế" },
+//     ],
+//   },
+// ];
 
   return (
-    <div className="flex flex-col items-center space-y-6">
-      <h2 className="text-2xl font-semibold text-primary">
-        Flashcard học từ vựng
-      </h2>
+    <Box>
+       {
+          // auth?.userDetail?.id === selectedClassRoom?.teacher?.id &&
+            <div className="py-2 text-center">
+              <FlashCardCreationModal classRoomId={classRoomId}></FlashCardCreationModal>
+            </div>
+      }
+    <Box className='flex flex-col gap-y-2 py-4'>
+      {Array.isArray(flashcard?.list) && flashcard.list.length > 0 ?
+        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {flashcard?.list.map((topic) => (
+            <Card
+              key={topic.id}
+              className="relative overflow-hidden cursor-pointer rounded-xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+            >
+              {/* Ảnh nền */}
+              <div
+                className="absolute inset-0 bg-cover bg-center opacity-30"
+                style={{ backgroundImage: `url(${'https://cdn.pixabay.com/photo/2025/11/06/10/17/flying-9940425_1280.jpg'})` }}
+              />
 
-      <div className="w-full flex justify-center">
-        <motion.div
-          className="relative w-80 h-48 cursor-pointer"
-          onClick={handleFlip}
-          animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: 0.6 }}
-          style={{ transformStyle: "preserve-3d" }}
+              <CardContent className="relative flex flex-col justify-between h-64 p-6">
+                <div>
+                  <Typography variant="h5" fontWeight="bold" className="text-primary drop-shadow-lg">
+                    {topic.name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    className="mt-2 drop-shadow-sm"
+                  >
+                    {topic.description}
+                  </Typography>
+                </div>
+                <FlashCardModal cards={topic.cards}></FlashCardModal>
+              </CardContent>
+            </Card>
+          ))}
+        </div> : (
+        <Box
+            className="flex flex-col items-center justify-center"
+            sx={{ textAlign: "center", color: theme.palette.textColor.main, py: 4 }}
         >
-          {/* Mặt trước */}
-          <Card className="absolute w-full h-full flex items-center justify-center text-2xl font-bold shadow-md bg-blue-50 backface-hidden">
-            <CardContent className="flex flex-col items-center gap-2">
-              <span>{currentCard.en}</span>
-              <Button size="icon" onClick={(e) => { e.stopPropagation(); speak(currentCard.en); }}>
-                <Volume2 size={18} />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Mặt sau */}
-          <Card className="absolute w-full h-full flex items-center justify-center text-xl font-medium shadow-md bg-green-50 rotate-y-180 backface-hidden">
-            <CardContent>
-              <span>{currentCard.vi}</span>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      <div className="flex gap-4">
-        <Button
-          variant="outline"
-          onClick={() => handleRemember(false)}
-          disabled={reviewed.includes(currentIndex)}
-        >
-          Chưa nhớ
-        </Button>
-        <Button
-          variant="default"
-          onClick={() => handleRemember(true)}
-          disabled={reviewed.includes(currentIndex)}
-        >
-          Đã nhớ
-        </Button>
-      </div>
-
-      <div className="w-64 bg-gray-200 rounded-full h-2 mt-4">
-        <div
-          className="bg-blue-500 h-2 rounded-full"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      <div className="text-sm text-gray-600">
-        {learned.length}/{cards.length} đã nhớ
-      </div>
-
-      {reviewed.length === cards.length && (
-        <Button onClick={handleRestart} className="flex items-center gap-2">
-          <RotateCcw size={16} /> Học lại
-        </Button>
-      )}
-    </div>
+            <Typography variant="h6" gutterBottom>
+                Chưa có thẻ ghi nhớ nào!
+            </Typography>
+            <Typography variant="body2" sx={{ marginBottom: 2 }}>
+                Hãy theo dõi thường xuyên để nhận được thẻ ghi nhớ mới nhé.
+            </Typography>
+        </Box>
+       )}
+    </Box>
+    </Box>
   );
 }
