@@ -19,6 +19,15 @@ export const createVideo = createAsyncThunk('video/create', async (values) => {
     }
 })
 
+export const updateVideo = createAsyncThunk('video/update', async (values) => {
+    try {
+        const { data } = await api.put("/api/video", values)
+        return data
+    } catch (error) {
+        return error.message
+    }
+})
+
 export default createSlice({
     name: 'video',
     initialState: {
@@ -79,6 +88,38 @@ export default createSlice({
                 return state
             })
             .addCase(createVideo.rejected, (state, action) => {
+                state.error = true
+                state.loading = false
+                state.success = false
+                state.message = ''
+
+                return state
+            })
+
+            //UPDATE VIDEO
+            .addCase(updateVideo.pending, (state, action) => {
+                state.loading = true
+                state.error = false
+                state.message = ''
+
+                return state
+            })
+            .addCase(updateVideo.fulfilled, (state, action) => {
+                const updatedVideo = action.payload
+                const index = state.list.findIndex(
+                    video => video.id === updatedVideo.id
+                )
+                if (index !== -1) {
+                    state.list[index] = updatedVideo
+                }
+                state.error = false
+                state.success = true
+                state.message = 'Cập nhật video thành công!'
+                state.loading = false
+
+                return state
+            })
+            .addCase(updateVideo.rejected, (state, action) => {
                 state.error = true
                 state.loading = false
                 state.success = false

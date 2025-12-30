@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Card, CardContent, Typography, CardMedia, Box } from "@mui/material";
+import { Grid, Card, CardContent, Typography, CardMedia, Box, CardActions, IconButton } from "@mui/material";
 import { PlayCircleOutline } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { getThemeSelector, getVideoSelector } from "../../redux/selector";
 import { getListVideo } from "./videoSlice";
 import VideoCreationModal from "./VideoCreationModal";
+import MoreIcon from '@mui/icons-material/MoreVert';
+import VideoUpdateModal from "./VideoUpdateModal";
+
 
 const CourseVideos = ({classRoomId}) => {
   const video = useSelector(getVideoSelector)
@@ -72,18 +75,21 @@ const CourseVideos = ({classRoomId}) => {
                       {video.title}
                     </Typography>
                     <Typography
-  variant="body2"
-  color="text.secondary"
-  sx={{
-    display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    WebkitLineClamp: 2, // hiển thị 2 dòng
-  }}
->
-  {video.description}
-</Typography>
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        display: '-webkit-box',
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        WebkitLineClamp: 2, // hiển thị 2 dòng
+                      }}
+                    >
+                      {video.description}
+                    </Typography>
                   </CardContent>
+                   <CardActions>
+                      <VideoUpdateModal classRoomId={classRoomId} videoPlayer={video}></VideoUpdateModal>
+                    </CardActions>
                 </Card>
               ))}
             </div>
@@ -97,10 +103,10 @@ const CourseVideos = ({classRoomId}) => {
           sx={{ textAlign: "center", color: theme.palette.textColor.main, py: 4 }}
       >
           <Typography variant="h6" gutterBottom>
-              Chưa có thông báo nào!
+              Chưa có video bài giảng nào!
           </Typography>
           <Typography variant="body2" sx={{ marginBottom: 2 }}>
-              Hãy theo dõi thường xuyên để nhận được thông báo mới nhé.
+              Hãy theo dõi thường xuyên để nhận được video bài giảng mới nhé.
           </Typography>
        </Box>
       
